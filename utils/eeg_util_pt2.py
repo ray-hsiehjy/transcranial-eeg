@@ -110,16 +110,15 @@ def reduce_interictal(X: np.ndarray, y: np.ndarray, keep_size: int, seed=None):
     reduced_array: reduced sized array.
     """
     interictal_idx = np.where(y == 0)[0]
-    preictal_idx = np.where(y == 1)[0]
-    ictal_idx = np.where(y == 2)[0]
 
     if seed != None:
         np.random.seed(seed)
-    interictal_idx = np.random.choice(interictal_idx, size=keep_size, replace=False)
+    to_drop = np.random.choice(
+        interictal_idx, size=len(interictal_idx) - keep_size, replace=False
+    )
 
-    idx2keep = np.concatenate([interictal_idx, preictal_idx, ictal_idx])
-    reduced_X = X[idx2keep]
-    reduced_y = y[idx2keep]
+    reduced_X = np.delete(X, to_drop, axis=0)
+    reduced_y = np.delete(y, to_drop, axis=0)
 
     return reduced_X, reduced_y
 
