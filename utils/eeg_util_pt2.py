@@ -240,7 +240,7 @@ def split_data(
     return train_X, train_y, test_X, test_y
 
 
-def merge_preictal(label: np.ndarray, how: str):
+def merge_preictal(label: np.ndarray, how: str) -> (np.ndarray, dict):
     """
     Merge preictal segment either into interictal or ictal category
     ----------
@@ -263,6 +263,7 @@ def merge_preictal(label: np.ndarray, how: str):
         label = np.where(label == 2, 1, label)
 
     # label_OH = np.eye(2)[label]
-    class_weights = compute_class_weight("balanced", np.arange(2), label)
+    weights = compute_class_weight("balanced", np.arange(2), label)
+    class_weights = {{0: weights[0], 1: weights[1]}}
 
     return label, class_weights
