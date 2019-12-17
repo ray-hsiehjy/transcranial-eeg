@@ -180,3 +180,58 @@ def bin_steps(power: np.ndarray, label: np.ndarray, Tx: int):
 
     return power_Tx2, label_Tx2
 
+
+def split_data(
+    power_Tx: np.ndarray,
+    label_Tx: np.ndarray,
+    num_episodes: int,
+    preictal_length: int,
+    seed=None,
+    keep_size=(300, 75),
+    shuffle=True,
+):
+    """
+    Split train and test data for individual subject.
+    Random select a fraction of interictal segments for training and testing
+    shuffle data before returning 
+    ----------
+
+    Parameters:
+    power: feature matrix X shape = (num_samples, Tx, num_ch*num_bands) = (num_samples, 2, 18*5)
+    label: label y
+    num_episodes: number of episodes from last used for testing
+    preictal_length: number of second added to "abnormal" category
+    keep_size: number of interictal samples used for train and test in tuple eg, (300, 75)
+    seed: randam seed for selecting interictal samples and for shuffle data
+
+    Ruturn:
+    train_X: 
+    """
+
+    # Use last several seizure edpisodes for testing
+    preictal_starts = np.where(label_Tx == 1)[0][:: (preictal_length // 4)]
+    cutoff = preictal_starts[-num_episodes]
+
+    # cutoff splits train and test
+    train_X, train_y = power_Tx[:cutoff], label_Tx[:cutoff]
+    test_X, test_y = power_Tx[cutoff:], label_Tx[cutoff:]
+
+    # reduce samples of interictal
+    train_X, train_y = reduce_interictal(
+        train_X, train_y, keep_size=keep_size[0], seed=seed
+    )
+    test_X, test_y = reduce_interictal(
+        test_X, test_y, keep_size=keep_size[1], seed=seed
+    )
+
+    # shuffle train data
+    if shuffle:
+        np.random.seed(seed)
+        train_order = np.random.permutation(len(train_y))
+        train_X, train_y = train_X[train_order], train_y[train_order]
+
+        np.random.seed(seed)
+        test_order = np.random.permutation(len(test_y))
+        test_X, test_y = test_X[test_order], test_y[test_order]
+
+    return train_X, train_y, test_X, test_y
