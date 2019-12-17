@@ -267,3 +267,78 @@ def merge_preictal(label: np.ndarray, how: str) -> (np.ndarray, dict):
     class_weights = {0: weights[0], 1: weights[1]}
 
     return label, class_weights
+
+
+def load_data(train_ids: list, preictal_length: int, Tx=2):
+
+    # Get data from individual subject. Interictal=0, preictal=2, ictal=1
+    power, label = get_pickled_data(
+        train_ids, preictal_length, clean_spectra=True, threshold=-25, z_score=True
+    )
+
+    # bin data, 2 segments per prediction
+    power_Tx2, label_Tx2 = bin_steps(power, label, Tx=2)
+
+    return power_Tx2, label_Tx2
+
+
+def preprocess_data(
+    power_Tx2,
+    label_Tx2,
+    num_episodes: int,
+    preictal_length: int,
+    merge_method: str,
+    keep_size=(300, 75),
+):
+    """
+    prepare data for training
+
+    Parameters:
+    ----------
+    power_Tx2: feature matrix X, from load_data()
+    label_Tx2: labels for power_Tx2, from load_data()
+    num_episodes: number of episodes from last used for testing
+    preictal_length: numbers in seconds
+    merge_method: either "to_interictal" or "to_ictal". Where to put preictal segments
+    keep_size: interictal samples in training and testing respectively.
+
+    Return:
+    ----------
+    train_X, train_ym, train_ym_OH, 
+    test_X, test_y, test_y_OH, 
+    sample_weights: 3 way before merge
+    class_weights: 2 way after merge
+    """
+    # split training and testing data with custom function. Use last num_episodes for testing to prevent info leak.
+    train_X, train_y, test_X, test_y = split_data(
+        power_Tx2,
+        label_Tx2,
+        num_episodes=num_episodes,
+        preictal_length=preictal_length,
+        seed=29,
+        keep_size=keep_size,
+        shuffle=True,
+    )
+
+    # get sample weights
+    sample_ratio = compute_class_weight("balanced", [0, 1, 2], train_y)
+    sample_weights = np.zeros_like(train_y, dtype="float")
+    for i in range(3):
+        sample_weights[train_y == i] = sample_ratio[i]
+
+    # merge groups
+    train_ym, weights = merge_preictal(train_y, how=merge_method)
+    test_ym, _ = merge_preictal(test_y, how=merge_method)
+    class_weights = {0: weights[0], 1: weights[1]}
+
+    return (
+        train_X,
+        train_y,
+        train_ym,
+        test_X,
+        test_y,
+        test_ym,
+        sample_weights,
+        class_weights,
+    )
+
