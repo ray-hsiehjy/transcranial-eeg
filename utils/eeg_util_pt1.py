@@ -306,8 +306,8 @@ def Edf_to_PickledArray(
         # create an all zero-array
         label = np.zeros(num_segment)
         # replace seizure segments with 1
-        label[ictal_lst] = 2
-        label[preictal_lst] = 1
+        label[ictal_lst] = 1
+        label[preictal_lst] = 2
         label_lst.append(label)
 
         # calculate power for every bandwidth, value unit in decible(db)
