@@ -259,6 +259,7 @@ def merge_preictal(label: np.ndarray, how: str) -> (np.ndarray, dict):
 
     if how == "to_interictal":
         label = np.where(label == 1, 0, label)
+        label = np.where(label == 2, 1, label)
     if how == "to_ictal":
         label = np.where(label == 1, 2, label)
         label = np.where(label == 2, 1, label)
