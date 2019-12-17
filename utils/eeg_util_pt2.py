@@ -327,9 +327,8 @@ def preprocess_data(
         sample_weights[train_y == i] = sample_ratio[i]
 
     # merge groups
-    train_ym, weights = merge_preictal(train_y, how=merge_method)
+    train_ym, class_weights = merge_preictal(train_y, how=merge_method)
     test_ym, _ = merge_preictal(test_y, how=merge_method)
-    class_weights = {0: weights[0], 1: weights[1]}
 
     return (
         train_X,
