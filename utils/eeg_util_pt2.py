@@ -58,7 +58,7 @@ def get_pickled_data(
     Return:
     ----------
     powers: feature matrix X shape==(number of segments, num_ch*num_band=18*5=90)
-    labels: 0: interictal, 1:preictal, 2:ictal
+    labels: 0: interictal, 2:preictal, 1:ictal
     """
     power_lst = []
     label_lst = []
