@@ -209,7 +209,7 @@ def split_data(
     """
 
     # Use last several seizure edpisodes for testing
-    preictal_starts = np.where(label_Tx == 1)[0][:: (preictal_length // 4)]
+    preictal_starts = np.where(label_Tx == 2)[0][:: (preictal_length // 4)]
     cutoff = preictal_starts[-num_episodes]
 
     # cutoff splits train and test
