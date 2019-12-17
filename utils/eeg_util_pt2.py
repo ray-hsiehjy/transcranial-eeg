@@ -212,7 +212,7 @@ def split_data(
     """
 
     # Use last several seizure edpisodes for testing
-    preictal_starts = np.where(label_Tx == 2)[0][:: (preictal_length // 4)]
+    preictal_starts = np.where(label_Tx == 1)[0][:: (preictal_length // 4)]
     cutoff = preictal_starts[-num_episodes]
 
     # cutoff splits train and test
@@ -256,19 +256,19 @@ def merge_preictal(label: np.ndarray, how: str) -> (np.ndarray, dict):
     label_OH: label one-hot
     class_weights: the ratio between 0 and 1 in label_m. For later training purpose
     """
-
+    label_m = label
     if how == "to_interictal":
-        label = np.where(label == 1, 0, label)
-        label = np.where(label == 2, 1, label)
+        label_m = np.where(label == 1, 0, label)
+        label_m = np.where(label_m == 2, 1, label_m)
     if how == "to_ictal":
-        label = np.where(label == 1, 2, label)
-        label = np.where(label == 2, 1, label)
+        label_m = np.where(label == 1, 2, label)
+        label_m = np.where(label_m == 2, 1, label_m)
 
     # label_OH = np.eye(2)[label]
-    weights = compute_class_weight("balanced", np.arange(2), label)
+    weights = compute_class_weight("balanced", np.arange(2), label_m)
     class_weights = {0: weights[0], 1: weights[1]}
 
-    return label, class_weights
+    return label_m, class_weights
 
 
 def load_data(train_ids: list, preictal_length: int, Tx=2):
