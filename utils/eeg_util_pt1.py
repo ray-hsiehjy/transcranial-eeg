@@ -211,7 +211,7 @@ def Edf_to_PickledArray(
     ----------
     create a subfolder "pickle_preictalXX" under main_folder and put three pickle files in it
         data X, shape (num_segment, num_ch, len(band_range))
-        label y, shape (num_segment,): 0==interictal, 0.5==preictal, 1==ictal
+        label y, shape (num_segment,): 0==interictal, 1==preictal, 2==ictal
         ref_dict: 
             key: filenames, value: timestamps of seizure events. 
             Key=="seg_lst", value: marks of where files are concatenated
@@ -306,8 +306,8 @@ def Edf_to_PickledArray(
         # create an all zero-array
         label = np.zeros(num_segment)
         # replace seizure segments with 1
-        label[ictal_lst] = 1
-        label[preictal_lst] = 2
+        label[ictal_lst] = 2
+        label[preictal_lst] = 1
         label_lst.append(label)
 
         # calculate power for every bandwidth, value unit in decible(db)
