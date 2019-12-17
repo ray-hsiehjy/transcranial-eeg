@@ -164,3 +164,19 @@ def construct_timesteps(
 
     return binned_X, binned_y
 
+
+def bin_steps(power: np.ndarray, label: np.ndarray, Tx: int):
+    """
+    Construct sliding window with timesteps for each sample == Tx
+
+    """
+
+    label_Tx2 = np.asarray(
+        [np.max(label[i : i + Tx]) for i in range(len(label) - Tx + 1)], dtype="int"
+    )
+    power_Tx2 = np.zeros(shape=(len(label_Tx2), Tx, 90))
+    for i in range(power.shape[0] - Tx + 1):
+        power_Tx2[i, :, :] = power[i : i + Tx]
+
+    return power_Tx2, label_Tx2
+
