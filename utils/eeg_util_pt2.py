@@ -264,6 +264,6 @@ def merge_preictal(label: np.ndarray, how: str) -> (np.ndarray, dict):
 
     # label_OH = np.eye(2)[label]
     weights = compute_class_weight("balanced", np.arange(2), label)
-    class_weights = {{0: weights[0], 1: weights[1]}}
+    class_weights = {0: weights[0], 1: weights[1]}
 
     return label, class_weights
