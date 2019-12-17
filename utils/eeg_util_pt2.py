@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pickle
 from sklearn.preprocessing import StandardScaler
+from sklearn.utils.class_weight import compute_class_weight
 
 
 def clean_powerspectra(array: np.ndarray, threshold=-25) -> np.ndarray:
@@ -197,6 +198,7 @@ def split_data(
     ----------
 
     Parameters:
+    ----------
     power: feature matrix X shape = (num_samples, Tx, num_ch*num_bands) = (num_samples, 2, 18*5)
     label: label y
     num_episodes: number of episodes from last used for testing
@@ -205,7 +207,8 @@ def split_data(
     seed: randam seed for selecting interictal samples and for shuffle data
 
     Ruturn:
-    train_X: 
+    ----------
+    train_X, train_y, test_X, test_y all shuffled
     """
 
     # Use last several seizure edpisodes for testing
@@ -235,3 +238,31 @@ def split_data(
         test_X, test_y = test_X[test_order], test_y[test_order]
 
     return train_X, train_y, test_X, test_y
+
+
+def merge_preictal(label: np.ndarray, how: str):
+    """
+    Merge preictal segment either into interictal or ictal category
+    ----------
+
+    Parameters:
+    ----------
+    label: the label array to be modified
+    how: either "to_interictal" or "to_ictal"
+
+    Return:
+    ----------
+    label: modified label array 
+    label_OH: label one-hot
+    class_weights: the ratio between 0 and 1 in label_m. For later training purpose
+    """
+
+    if how == "to_interictal":
+        label = np.where(label == 2, 0, label)
+    if how == "to_ictal":
+        label = np.where(label == 2, 1, label)
+
+    # label_OH = np.eye(2)[label]
+    class_weights = compute_class_weight("balanced", np.arange(2), label)
+
+    return label, class_weights
