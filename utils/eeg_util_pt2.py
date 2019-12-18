@@ -171,9 +171,10 @@ def bin_steps(power: np.ndarray, label: np.ndarray, Tx: int):
     Construct sliding window with timesteps for each sample == Tx
 
     """
-
+    find_middle = lambda i: int(np.ceil(np.median(np.arange(i, i + Tx, 1))))
     label_Tx2 = np.asarray(
-        [np.max(label[i : i + Tx]) for i in range(len(label) - Tx + 1)], dtype="int"
+        # [np.max(label[i : i + Tx]) for i in range(len(label) - Tx + 1)], dtype="int"
+        [label[find_middle(i)] for i in range(len(label) - Tx + 1)]
     )
     power_Tx2 = np.zeros(shape=(len(label_Tx2), Tx, 90))
     for i in range(power.shape[0] - Tx + 1):
