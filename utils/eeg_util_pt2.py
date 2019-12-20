@@ -231,11 +231,11 @@ def split_data(
 
     # shuffle train data
     if shuffle:
-        np.random.seed(seed)
+        np.random.seed(seed + 1)
         train_order = np.random.permutation(len(train_y))
         train_X, train_y = train_X[train_order], train_y[train_order]
 
-        np.random.seed(seed)
+        np.random.seed(seed + 1)
         test_order = np.random.permutation(len(test_y))
         test_X, test_y = test_X[test_order], test_y[test_order]
 
@@ -299,6 +299,7 @@ def preprocess_data(
     merge_method: str,
     keep_size=(300, 75),
     sample_ratio=True,
+    seed=29,
 ):
     """
     prepare data for training
@@ -325,7 +326,7 @@ def preprocess_data(
         label_Tx2,
         num_episodes=num_episodes,
         preictal_length=preictal_length,
-        seed=29,
+        seed=seed,
         keep_size=keep_size,
         shuffle=True,
     )
