@@ -272,11 +272,16 @@ def merge_preictal(label: np.ndarray, how: str) -> (np.ndarray, dict):
     return label_m, class_weights
 
 
-def load_data(train_ids: list, preictal_length: int, Tx=2):
+def load_data(train_ids: list, preictal_length: int, Tx=2, local=False):
 
     # Get data from individual subject. Interictal=0, preictal=2, ictal=1
     power, label = get_pickled_data(
-        train_ids, preictal_length, clean_spectra=True, threshold=-25, z_score=True
+        train_ids,
+        preictal_length,
+        clean_spectra=True,
+        threshold=-25,
+        z_score=True,
+        local=local,
     )
 
     # bin data, 2 segments per prediction
