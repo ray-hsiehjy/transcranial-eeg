@@ -298,6 +298,7 @@ def preprocess_data(
     preictal_length: int,
     merge_method: str,
     keep_size=(300, 75),
+    sample_ratio=True,
 ):
     """
     prepare data for training
@@ -330,10 +331,13 @@ def preprocess_data(
     )
 
     # get sample weights
-    sample_ratio = compute_class_weight("balanced", [0, 1, 2], train_y)
-    sample_weights = np.zeros_like(train_y, dtype="float")
-    for i in range(3):
-        sample_weights[train_y == i] = sample_ratio[i]
+    if sample_ratio:
+        sample_ratio = compute_class_weight("balanced", [0, 1, 2], train_y)
+        sample_weights = np.zeros_like(train_y, dtype="float")
+        for i in range(3):
+            sample_weights[train_y == i] = sample_ratio[i]
+    else:
+        sample_weights == None
 
     # merge groups
     train_ym, class_weights = merge_preictal(train_y, how=merge_method)
