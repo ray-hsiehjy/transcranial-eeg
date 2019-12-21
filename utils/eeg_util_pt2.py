@@ -297,7 +297,7 @@ def preprocess_data(
     num_episodes: int,
     preictal_length: int,
     merge_method: str,
-    keep_size=(300, 75),
+    keep_size: tuple,
     sample_ratio=True,
     seed=29,
 ):
