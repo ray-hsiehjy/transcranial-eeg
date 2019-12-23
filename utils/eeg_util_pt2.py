@@ -54,7 +54,6 @@ def get_pickled_data(
     z_score: if ture convert power to z_score 
     local: if True, set main_fd path to local main_folder. Otherwise, main_fd on google drive
 
-
     Return:
     ----------
     powers: feature matrix X shape==(number of segments, num_ch*num_band=18*5=90)
@@ -286,7 +285,7 @@ def load_data(train_ids: list, preictal_length: int, Tx=2, local=False):
     )
 
     # bin data, 2 segments per prediction
-    power_Tx2, label_Tx2 = bin_steps(power, label, Tx=2)
+    power_Tx2, label_Tx2 = bin_steps(power, label, Tx=Tx)
 
     return power_Tx2, label_Tx2
 
